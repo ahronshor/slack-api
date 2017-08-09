@@ -14,9 +14,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -32,7 +33,7 @@ public abstract class RestUtils {
 		for (Entry<String, String> entry : parameters.entrySet()) {
 			nvps.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
 		}
-		return new UrlEncodedFormEntity(nvps, Charset.forName("UTF-8"));
+		return new StringEntity(URLEncodedUtils.format(nvps, Charset.forName("UTF-8")), ContentType.create(URLEncodedUtils.CONTENT_TYPE));
 	}
 
 	public static HttpEntity createMultipartFormEntity(Map<String, String> parameters, InputStream is) {
@@ -54,7 +55,7 @@ public abstract class RestUtils {
 	}
 
 	public static String execute(CloseableHttpClient httpClient, String url, HttpEntity httpEntity) {
-		logger.info("url : " + url);
+		logger.info("url : " + url + ", " + httpEntity.getContentType());
 
 		try {
 			HttpPost httpPost = new HttpPost(url);
